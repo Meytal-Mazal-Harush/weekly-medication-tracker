@@ -1,0 +1,522 @@
+/* ==========================================================================
+   הגדרות בסיס, משתני צבע ורקע האפליקציה (בהשראת התמונה)
+   ========================================================================== */
+:root {
+  --main-blue: #a3daff;
+  --main-pink: #ffaeb9;
+  --gradient-primary: linear-gradient(135deg, #a3daff 0%, #ffaeb9 100%);
+  --gradient-delete: linear-gradient(135deg, #ff8a9a 0%, #ff4d6d 100%);
+  --white-glass: rgba(255, 255, 255, 0.75);
+  --text-color: #1a2a3a;
+  --text-muted: #64748b;
+  --border-glass: 2px solid rgba(255, 255, 255, 0.6);
+  --shadow-main: 0 10px 40px rgba(163, 218, 255, 0.2);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  direction: rtl;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 24px 40px 24px;
+  position: relative;
+  background-color: #edf4f9;
+}
+
+/* רקע התרופות המקצועי המטושטש מהתמונה */
+/* הרקע הרפואי החדש והאסתטי מהתמונה */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* קריאה לתמונה ששמרת בתיקיית public */
+  background-image: url('/medical-bg.jpg'); 
+  background-size: cover;
+  background-position: center;
+  
+  /* שקיפות וטשטוש עדינים כדי שהכרטיסיות של האפליקציה שלך יבלטו בצורה מושלמת */
+  opacity: 0.25; 
+  filter: blur(2px); 
+  z-index: -1;
+}
+/* ==========================================================================
+   מבנה התיבות והכרטיסיות החצי שקופות (Glassmorphism Containers)
+   ========================================================================== */
+.home-container, 
+.add-medicine-container, 
+.day-details-container {
+  background: var(--white-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: var(--shadow-main);
+}
+
+/* התאמת רוחב לדף הטבלה השבועית */
+.weekly-table-container {
+  background: var(--white-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  width: 100%;
+  max-width: 1000px;
+  box-shadow: var(--shadow-main);
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-color);
+}
+
+/* ==========================================================================
+   שדות קלט וטפסים (Inputs & Selectors)
+   ========================================================================== */
+.medicine-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(163, 218, 255, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  color: var(--text-color);
+  transition: var(--transition);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--main-blue);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(163, 218, 255, 0.2);
+}
+
+input[type="text"]:disabled {
+  background: rgba(220, 230, 240, 0.5);
+  border-color: rgba(200, 215, 230, 0.5);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* שגיאות */
+.input-error { border-color: #ff8a9a !important; }
+.error { color: #ff4d6d; font-size: 0.85rem; font-weight: 600; margin-top: 4px; }
+
+/* בורר הימים - כפתורים עגולים קטנים כמו בתמונה */
+.days-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.day-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+/* הסתרת התיבה המקורית */
+.day-checkbox input { 
+  display: none; 
+}
+
+/* עיצוב טקסט היום כברירת מחדל */
+.day-checkbox span { 
+  font-weight: 600; 
+  font-size: 0.9rem; 
+  color: var(--text-color); 
+  transition: var(--transition);
+}
+
+/* הפתרון: כשהאינפוט מסומן, נשנה את העיצוב של ה-span שבא מיד אחריו */
+.day-checkbox input:checked + span { 
+  color: white; 
+}
+
+/* וכשהאינפוט מסומן, נשנה את הרקע של התיבה כולה */
+.day-checkbox:has(input:checked), /* תומך בדפדפנים הכי חדישים */
+.day-checkbox:hover {
+  background: rgba(163, 218, 255, 0.15);
+}
+
+/* כדי לעקוף את השגיאה לחלוטין ולצבוע את הכפתור בגרדיאנטPrimary כשזה מסומן: */
+.day-checkbox input:checked ~ span {
+  color: white;
+}
+
+/* הנה העיצוב העוקף המדויק ללא שימוש ב-has עבור הרקע הכללי: */
+.day-checkbox {
+  /* נשנה קצת את השיטה: נעביר את הגרדיאנט ל-span שימלא את כל שטח הכפתור */
+  position: relative;
+  overflow: hidden;
+}
+
+.day-checkbox span {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: var(--transition);
+}
+
+/* כשהצ'קבוקס מסומן - ה-span הופך לגרדיאנט מלא ומכסה את הכל */
+.day-checkbox input:checked + span {
+  background: var(--gradient-primary);
+  color: white;
+}
+/* ==========================================================================
+   כפתורים (Buttons)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+/* כפתור הגרדיאנט המרכזי מהתמונה */
+.btn-primary, .btn-large {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 174, 185, 0.35);
+  width: 100%;
+}
+
+.btn-primary:hover, .btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 174, 185, 0.5);
+}
+
+.btn-back {
+  background: white;
+  color: var(--text-color);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+  border-radius: var(--radius-md);
+}
+
+.btn-back:hover {
+  background: #f8fafc;
+  transform: translateX(-4px);
+}
+
+/* ==========================================================================
+   גריד הטבלה השבועית וכרטיסיות הימים (Weekly Table & Day Card)
+   ========================================================================== */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* מסודר ב-4 עמודות כמו בצילום המסך */
+  gap: 16px;
+  margin-top: 25px;
+}
+
+@media (max-width: 768px) {
+  .days-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+a.day-card {
+  text-decoration: none;
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  min-height: 110px;
+}
+
+a.day-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(163, 218, 255, 0.3);
+}
+
+/* צבעי כותרות הימים לפי הלוגיקה בתמונה (חלק תכלת וחלק ורוד) */
+a.day-card:nth-child(even) h3 {
+  background: #ffe3e7;
+  color: #ff4d6d;
+}
+a.day-card:nth-child(odd) h3 {
+  background: #e3f2fd;
+  color: #0288d1;
+}
+
+a.day-card h3 {
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+a.day-card p.medicine-list {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   פריט תרופה (Medicine Item)
+   ========================================================================== */
+.medicines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.medicine-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.medicine-info h4 {
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.medicine-info p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.medicine-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.medicine-actions .btn-edit {
+  background: #f0f7ff;
+  color: #0088cc;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.medicine-actions .btn-delete {
+  background: #fff0f2;
+  color: #ff4d6d;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   מודל דיאלוג אישור (Confirm Dialog פופ-אפ)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.modal-content h3 {
+  font-size: 1.3rem;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.dialog-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.modal-content .btn-secondary {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.modal-content .btn-danger {
+  background: var(--gradient-delete);
+  color: white;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.modal-content .btn-outline {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid #e2e8f0;
+  padding: 10px;
+  width: 100%;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   דף הבית (Home) והטבות
+   ========================================================================== */
+.hero {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.hero p {
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.benefits {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.benefits h2 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.benefits ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.benefits li {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   תפריט ניווט עליון קבוע (Navbar)
+   ========================================================================== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 900;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.nav-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 16px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: var(--transition);
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

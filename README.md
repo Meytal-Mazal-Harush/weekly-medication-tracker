@@ -1,17 +1,16 @@
+# React + Vite
 
-# Weekly Medication Management System
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-A robust, client-side web application designed to help users manage and track their weekly medication schedules. The application provides an intuitive and responsive user interface to ensure optimal user experience across all devices.
+Currently, two official plugins are available:
 
-## 🚀 Key Features
-* **Weekly Overview:** A 7-day grid dashboard displaying a summary of medications for each day.
-* **Full CRUD Operations:** Seamlessly add, update, and remove medications.
-* **Advanced Deletion Options:** Supports localized deletion (from a specific day) or global deletion (from the entire week) by name.
-* **Smart Validation:** Robust form validation with interactive error handling and safe URL data casting.
-* **Smart Data Normalization:** Automatically detects and normalizes numeric inputs vs. descriptive text for medication amounts.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## 🛠️ Tech Stack
-* **Frontend:** React.js (Functional Components & Hooks)
-* **State Management:** Redux Toolkit (Slices, Actions, Reducers)
-* **Routing:** React Router v6 (Dynamic Route Parameters)
-* **Build Tool:** Vite
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
